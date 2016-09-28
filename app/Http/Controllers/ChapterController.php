@@ -2,6 +2,7 @@
 
 use Activity;
 use BookStack\Repos\UserRepo;
+use BookStack\Services\ExportService;
 use Illuminate\Http\Request;
 use BookStack\Http\Requests;
 use BookStack\Repos\BookRepo;
@@ -13,6 +14,7 @@ class ChapterController extends Controller
 
     protected $bookRepo;
     protected $chapterRepo;
+    protected $exportService;
     protected $userRepo;
 
     /**
@@ -21,10 +23,11 @@ class ChapterController extends Controller
      * @param ChapterRepo $chapterRepo
      * @param UserRepo $userRepo
      */
-    public function __construct(BookRepo $bookRepo, ChapterRepo $chapterRepo, UserRepo $userRepo)
+    public function __construct(BookRepo $bookRepo, ChapterRepo $chapterRepo, ExportService $exportService, UserRepo $userRepo)
     {
         $this->bookRepo = $bookRepo;
         $this->chapterRepo = $chapterRepo;
+        $this->exportService = $exportService;
         $this->userRepo = $userRepo;
         parent::__construct();
     }
@@ -244,5 +247,42 @@ class ChapterController extends Controller
         $this->chapterRepo->updateEntityPermissionsFromRequest($request, $chapter);
         session()->flash('success', 'Chapter Restrictions Updated');
         return redirect($chapter->getUrl());
+    }
+
+    /**
+     * Export chapter to HTML.
+     * @param $bookSlug
+     * @param $chapterSlug
+     * @return 
+     */
+    public function controllerExportFromChapterToHtml ($bookSlug, $chapterSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $chapter = $this->chapterRepo->getBySlug($chapterSlug, $book->id);
+        $containedHtml = $this->exportService->serviceExportFromChapterToHtml($chapter);
+        return response()->make($containedHtml, 200, [
+            'Content-Type'        => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $chapterSlug . '.html'
+        ]); 
+    }
+
+    /**
+     * Export chapter to PDF.
+     * @param $bookSlug
+     * @param $chapterSlug
+     * @return 
+     */
+    public function controllerExportFromChapterToPdf ($bookSlug, $chapterSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $chapter = $this->chapterRepo->getBySlug($chapterSlug, $book->id);
+        $containedHtml = $this->exportService->serviceExportFromChapterToPdf($chapter);
+        if (setting('pdfparser') == 'script') {
+            return response()->download(storage_path() . '/' . $chapter->slug . '.pdf');
+        } else {
+            return response()->make($containedHtml, 200, [
+                'Content-Type'        => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="' . $chapterSlug . '.pdf'
+            ]);
+        }
+        return null;
     }
 }

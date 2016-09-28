@@ -390,6 +390,114 @@ class PageController extends Controller
     }
 
     /**
+     * Export a page to a self-contained HTML file.
+     * @param $bookSlug
+     * @param $pageSlug
+     * @return \Illuminate\Http\Response
+     */
+    /*
+    public function exportBookHtml($bookSlug, $pageSlug)
+    {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $page = $this->pageRepo->getBySlug($pageSlug, $book->id);
+        $containedHtml = $this->exportService->pageToBookContainedHtml($page);
+        return response()->make($containedHtml, 200, [
+            'Content-Type'        => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $pageSlug . '.html'
+        ]);
+    }
+    */
+    /**
+     * Export a book to a self-contained HTML file.
+     * @param $bookSlug
+     * @return \Illuminate\Http\Response
+     */
+    /*
+    public function exportFromBookToHtml($bookSlug)
+    {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+	$children = $this->bookRepo->getChildren($book);
+
+	if (count($children) > 0) {
+            foreach($children as $childElement) {
+                if(count($childElement->pages) > 0) {
+                    foreach($childElement->pages as $currentPage) {
+                        $page = $currentPage;
+                        $containedHtml = $this->exportService->fromBookToHtml($page);
+                        return response()->make($containedHtml, 200, [
+                            'Content-Type'        => 'application/octet-stream',
+                            'Content-Disposition' => 'attachment; filename="' . $bookSlug . '.html'
+                        ]);
+                        break;
+                    }
+                    break;
+                }
+            }
+        } else {
+            info('Not exporting Book as Contained Web since there are no children to export in book ' . $book->name . '.');
+        }
+    }
+
+    public function exportFromChapterToHtml($bookSlug, $chapSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $chapter = $this->chapterRepo->getBySlug($chapSlug, $book->id);
+        $children = $this->chapterRepo->getChildren($chapter);
+
+        if (count($children) > 0) {
+            foreach($children as $currentPage) {
+                $page = $currentPage;
+                $containedHtml = $this->exportService->fromChapterToHtml($page);
+                return response()->make($containedHtml, 200, [
+                    'Content-Type'        => 'application/octet-stream',
+                    'Content-Disposition' => 'attachment; filename="' . $chapSlug . '.html'
+                ]);
+                break;
+            }
+        }
+    }
+
+    public function exportFromChapterToPdf($bookSlug, $chapSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $chapter = $this->chapterRepo->getBySlug($chapSlug, $book->id);
+        $children = $this->chapterRepo->getChildren($chapter);
+
+        if (count($children) > 0) {
+            foreach($children as $currentPage) {
+                $page = $currentPage;
+                $pdfContent = $this->exportService->fromChapterToPdf($page);
+                return response()->make($pdfContent, 200, [
+                    'Content-Type'        => 'application/octet-stream',
+                    'Content-Disposition' => 'attachment; filename="' . $chapSlug . '.pdf'
+                ]);
+                break;
+            }
+        }
+    }
+
+    public function exportFromBookToPdf ($bookSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $children = $this->bookRepo->getChildren($book);
+        //ini_set('max_execution_time', 600);
+        //ini_set('memory_limit', '512M');
+        if (count($children) > 0) {
+            foreach($children as $childElement) {
+                if(count($childElement->pages) > 0) {
+                    foreach($childElement->pages as $currentPage) {
+                        $page = $currentPage;
+                        $pdfContent = $this->exportService->bookToPdf($page);
+                        return response()->make($pdfContent, 200, [
+                            'Content-Type'        => 'application/octet-stream',
+                            'Content-Disposition' => 'attachment; filename="' . $bookSlug . '.pdf'
+                        ]);
+                        break;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    */
+    /**
      * Export a page to a simple plaintext .txt file.
      * @param $bookSlug
      * @param $pageSlug
@@ -526,6 +634,44 @@ class PageController extends Controller
         $this->pageRepo->updateEntityPermissionsFromRequest($request, $page);
         session()->flash('success', 'Page Permissions Updated');
         return redirect($page->getUrl());
+    }
+
+    /**
+     * Export page to HTML.
+     * @param $bookSlug
+     * @param $pageSlug
+     * @return 
+     */
+    public function controllerExportFromPageToHtml($bookSlug, $pageSlug)
+    {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $page = $this->pageRepo->getBySlug($pageSlug, $book->id);
+        $containedHtml = $this->exportService->serviceExportFromPageToHtml($page);
+        return response()->make($containedHtml, 200, [
+            'Content-Type'        => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $pageSlug . '.html'
+        ]);
+    }
+
+    /**
+     * Export page to PDF.
+     * @param $bookSlug
+     * @param $chapterSlug
+     * @return 
+     */
+    public function controllerExportFromPageToPdf ($bookSlug, $pageSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $page = $this->pageRepo->getBySlug($pageSlug, $book->id);
+        $containedHtml = $this->exportService->serviceExportFromPageToPdf($page);
+        if (setting('pdfparser') == 'script') {
+            return response()->download(storage_path() . '/' . $page->slug . '.pdf');
+        } else {
+	        return response()->make($containedHtml, 200, [
+        	    'Content-Type'        => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="' . $pageSlug . '.pdf'
+            ]);
+        }
+        return null;
     }
 
 }

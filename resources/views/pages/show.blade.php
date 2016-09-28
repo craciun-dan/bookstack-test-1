@@ -25,6 +25,8 @@
                                 <li><a href="{{$page->getUrl()}}/export/html" target="_blank">Contained Web File <span class="text-muted float right">.html</span></a></li>
                                 <li><a href="{{$page->getUrl()}}/export/pdf" target="_blank">PDF File <span class="text-muted float right">.pdf</span></a></li>
                                 <li><a href="{{$page->getUrl()}}/export/plaintext" target="_blank">Plain Text File <span class="text-muted float right">.txt</span></a></li>
+                                <li><a href="{{$page->getUrl()}}/export/newfrompagehtml" target="_blank">Page to HTML <span class="text-muted float right">.html</span></a></li>
+                                <li><a href="{{$page->getUrl()}}/export/newfrompagepdf" target="_blank">Page to PDF <span class="text-muted float right">.pdf</span></a></li>
                             </ul>
                         </span>
                         @if(userCan('page-update', $page))

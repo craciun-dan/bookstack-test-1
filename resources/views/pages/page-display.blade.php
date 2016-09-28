@@ -1,6 +1,35 @@
 <div ng-non-bindable>
 
-    <h1 id="bkmrk-page-title" class="float left">{{$page->name}}</h1>
+<h1 id="bkmrk-page-title" class="float left">
+<?php
+
+if (setting('display-indexes')) {
+    $i = 1;
+    if (isset($page->book) && count($page->book->chapters) > 0) {
+        foreach ($page->book->chapters as $currentChapter) {
+            if (isset($page->chapter)) {
+                if ($currentChapter->name == $page->chapter->name) {
+                    $j = 1;
+                    foreach ($page->chapter->pages as $currentPage) {
+                        if ($currentPage->name == $page->name) {
+                            print $i . "." . $j . ". ";
+                            break;
+                        }
+                        $j++;
+                    }
+                    break;
+                }
+            }
+            $i++;
+        }
+    }
+} else {
+// do nothing
+}
+
+?>
+{{$page->name}}
+</h1>
 
     @if(count($page->tags) > 0)
         <div class="tag-display float right">

@@ -1,10 +1,95 @@
 <?php namespace BookStack\Services;
 
-
 use BookStack\Page;
+use BookStack\Chapter;
+use BookStack\Book;
 
 class ExportService
 {
+
+    public function serviceExportFromPageToHtml (Page $page) {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('pages/new-export-page-html', ['page' => $page, 'css' => $cssContent])->render();
+        return $this->containHtml($pageHtml);
+    }
+
+    public function serviceExportFromChapterToHtml (Chapter $chapter) {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $chapterHtml = view('chapters/new-export-chapter-html', ['chapter' => $chapter, 'css' => $cssContent])->render();
+        return $this->containHtml($chapterHtml);
+    }
+
+    public function serviceExportFromBookToHtml (Book $book) {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $bookHtml = view('books/new-export-book-html', ['book' => $book, 'css' => $cssContent])->render();
+        return $this->containHtml($bookHtml);
+    }
+
+    public function serviceExportFromPageToPdf (Page $page) {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('pages/new-export-page-pdf', ['page' => $page, 'css' => $cssContent])->render();
+        $containedHtml = $this->containHtml($pageHtml);
+
+        if (setting('pdfparser') == 'script') {
+            $file = fopen(storage_path() . '/' . $page->slug . '.html', 'wb');
+            fwrite($file, $containedHtml);
+            fclose($file);
+
+            include (base_path() . '/app/Services/PdfConvertPage.php');
+
+            return null;
+        } else {
+            $pdf = \PDF::loadHTML($containedHtml);
+
+            return $pdf->output();
+        }
+
+        return null;
+    }
+
+    public function serviceExportFromChapterToPdf (Chapter $chapter) {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $chapterHtml = view('chapters/new-export-chapter-pdf', ['chapter' => $chapter, 'css' => $cssContent])->render();
+        $containedHtml = $this->containHtml($chapterHtml);
+
+        if (setting('pdfparser') == 'script') {
+            $file = fopen(storage_path() . '/' . $chapter->slug . '.html', 'wb');
+            fwrite($file, $containedHtml);
+            fclose($file);
+
+            include (base_path() . '/app/Services/PdfConvertChapter.php');
+
+            return null;
+        } else {
+            $pdf = \PDF::loadHTML($containedHtml);
+
+            return $pdf->output();
+        }
+
+        return null;
+    }
+
+    public function serviceExportFromBookToPdf (Book $book) {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $bookHtml = view('books/new-export-book-html', ['book' => $book, 'css' => $cssContent])->render();
+        $containedHtml = $this->containHtml($bookHtml);
+
+        if (setting('pdfparser') == 'script') {
+            $file = fopen(storage_path() . '/' . $book->slug . '.html', 'wb');
+            fwrite($file, $containedHtml);
+            fclose($file);
+
+            include (base_path() . '/app/Services/PdfConvertBook.php');
+
+            return null;
+        } else {
+            $pdf = \PDF::loadHTML($containedHtml);
+
+            return $pdf->output();
+        }
+
+        return null;
+    }
 
     /**
      * Convert a page to a self-contained HTML file.
@@ -20,6 +105,19 @@ class ExportService
     }
 
     /**
+     * Convert a book to a self-contained HTML file.
+     * Includes required CSS & image content. Images are base64 encoded into the HTML.
+     * @param Page $page
+     * @return mixed|string
+     */
+    public function pageToContainedBookHtml(Page $page)
+    {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('pages/export-all', ['page' => $page, 'css' => $cssContent])->render();
+        return $this->containHtml($pageHtml);
+    }
+
+    /**
      * Convert a page to a pdf file.
      * @param Page $page
      * @return mixed|string
@@ -28,6 +126,44 @@ class ExportService
     {
         $cssContent = file_get_contents(public_path('/css/export-styles.css'));
         $pageHtml = view('pages/pdf', ['page' => $page, 'css' => $cssContent])->render();
+        $containedHtml = $this->containHtml($pageHtml);
+        $pdf = \PDF::loadHTML($containedHtml);
+        return $pdf->output();
+    }
+
+    public function bookToPdf(Page $page)
+    {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('books/export-book-pdf', ['page' => $page, 'css' => $cssContent])->render();
+        $containedHtml = $this->containHtml($pageHtml);
+        $pdf = \PDF::loadHTML($containedHtml);
+        return $pdf->output();
+    }
+
+    /**
+     * Convert a book to a self-contained HTML file.
+     * Includes required CSS & image content. Images are base64 encoded into the HTML.
+     * @param Page $page
+     * @return mixed|string
+     */
+    public function fromBookToHtml(Page $page)
+    {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('books/export-book', ['page' => $page, 'css' => $cssContent])->render();
+        return $this->containHtml($pageHtml);
+    }
+
+    public function fromChapterToHtml(Page $page)
+    {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('chapters/export-chapter', ['page' => $page, 'css' => $cssContent])->render();
+        return $this->containHtml($pageHtml);
+    }
+
+    public function fromChapterToPdf(Page $page)
+    {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('chapters/export-chapter-pdf', ['page' => $page, 'css' => $cssContent])->render();
         $containedHtml = $this->containHtml($pageHtml);
         $pdf = \PDF::loadHTML($containedHtml);
         return $pdf->output();
@@ -53,10 +189,12 @@ class ExportService
                 } else {
                     $pathString = $srcString;
                 }
-                $imageContent = file_get_contents($pathString);
-                $imageEncoded = 'data:image/' . pathinfo($pathString, PATHINFO_EXTENSION) . ';base64,' . base64_encode($imageContent);
-                $newImageString = str_replace($srcString, $imageEncoded, $oldImgString);
-                $htmlContent = str_replace($oldImgString, $newImageString, $htmlContent);
+//                if (file_exists($pathString)) {
+                    $imageContent = file_get_contents($pathString);
+                    $imageEncoded = 'data:image/' . pathinfo($pathString, PATHINFO_EXTENSION) . ';base64,' . base64_encode($imageContent);
+                    $newImageString = str_replace($srcString, $imageEncoded, $oldImgString);
+                    $htmlContent = str_replace($oldImgString, $newImageString, $htmlContent);
+//                }
             }
         }
 
@@ -100,16 +238,17 @@ class ExportService
         return $text;
     }
 
+    /**
+     * Convert a page to a pdf file.
+     * @param Page $page
+     * @return mixed|string
+     */
+    public function fromBookToPdf(Page $page)
+    {
+        $cssContent = file_get_contents(public_path('/css/export-styles.css'));
+        $pageHtml = view('pages/pdf', ['page' => $page, 'css' => $cssContent])->render();
+        $containedHtml = $this->containHtml($pageHtml);
+        $pdf = \PDF::loadHTML($containedHtml);
+        return $pdf->output();
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-

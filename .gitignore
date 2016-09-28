@@ -11,3 +11,14 @@ Homestead.yaml
 /storage/images
 _ide_helper.php
 /storage/debugbar
+bookdump1.sql
+/bsdump
+/storage/*.pdf
+/storage/*.html
+/resources/views/chapters/list-item.blade.20160913
+/resources/views/pages/changes.txt
+/storage/framework/cache.bak/.gitignore
+/storage/pdfconvert.log
+/storage/vars.log
+/public/test*
+/storage/framework/cache.bak

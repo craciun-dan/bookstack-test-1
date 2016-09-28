@@ -2,6 +2,7 @@
 
 use Activity;
 use BookStack\Repos\UserRepo;
+use BookStack\Services\ExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use BookStack\Http\Requests;
@@ -16,6 +17,7 @@ class BookController extends Controller
     protected $bookRepo;
     protected $pageRepo;
     protected $chapterRepo;
+    protected $exportService;
     protected $userRepo;
 
     /**
@@ -25,11 +27,12 @@ class BookController extends Controller
      * @param ChapterRepo $chapterRepo
      * @param UserRepo $userRepo
      */
-    public function __construct(BookRepo $bookRepo, PageRepo $pageRepo, ChapterRepo $chapterRepo, UserRepo $userRepo)
+    public function __construct(BookRepo $bookRepo, PageRepo $pageRepo, ChapterRepo $chapterRepo, ExportService $exportService, UserRepo $userRepo)
     {
         $this->bookRepo = $bookRepo;
         $this->pageRepo = $pageRepo;
         $this->chapterRepo = $chapterRepo;
+        $this->exportService = $exportService;
         $this->userRepo = $userRepo;
         parent::__construct();
     }
@@ -256,4 +259,38 @@ class BookController extends Controller
         session()->flash('success', 'Book Restrictions Updated');
         return redirect($book->getUrl());
     }
+
+    /**
+     * Export book to HTML.
+     * @param $bookSlug
+     * @return 
+     */
+    public function controllerExportFromBookToHtml ($bookSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $containedHtml = $this->exportService->serviceExportFromBookToHtml($book);
+        return response()->make($containedHtml, 200, [
+            'Content-Type'        => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $bookSlug . '.html'
+        ]);
+    }
+
+    /**
+     * Export book to HTML.
+     * @param $bookSlug
+     * @return 
+     */
+    public function controllerExportFromBookToPdf ($bookSlug) {
+        $book = $this->bookRepo->getBySlug($bookSlug);
+        $containedHtml = $this->exportService->serviceExportFromBookToPdf($book);
+        if (setting('pdfparser') == 'script') {
+            return response()->download(storage_path() . '/' . $book->slug . '.pdf');
+        } else {
+            return response()->make($containedHtml, 200, [
+                'Content-Type'        => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="' . $bookSlug . '.pdf'
+            ]);
+        }
+        return null;
+    }
+
 }

@@ -13,9 +13,17 @@
                         @if(userCan('chapter-create', $book))
                             <a href="{{$book->getUrl() . '/chapter/create'}}" class="text-pos text-button"><i class="zmdi zmdi-plus"></i> New Chapter</a>
                         @endif
+                        <span dropdown class="dropdown-container">
+                            <div dropdown-toggle class="text-button text-primary"><i class="zmdi zmdi-open-in-new"></i>Export</div>
+                            <ul class="wide">
+                                <li><a href="{{$book->getUrl()}}/export/newfrombookhtml" target="_blank">Book as HTML <span class="text-muted float right">.html</span></a></li>
+                                <li><a href="{{$book->getUrl()}}/export/newfrombookpdf" target="_blank">Book as PDF <span class="text-muted float right">.pdf</span></a></li>
+                            </ul>
+                        </span>
                         @if(userCan('book-update', $book))
                             <a href="{{$book->getEditUrl()}}" class="text-primary text-button"><i class="zmdi zmdi-edit"></i>Edit</a>
                         @endif
+
                         @if(userCan('book-update', $book) || userCan('restrictions-manage', $book) || userCan('book-delete', $book))
                             <div dropdown class="dropdown-container">
                                 <a dropdown-toggle class="text-primary text-button"><i class="zmdi zmdi-more-vert"></i></a>
@@ -43,12 +51,14 @@
         <div class="row">
             <div class="col-md-7">
 
-                <h1>{{$book->name}}</h1>
+<!--                <h1>{{$book->name}}</h1> -->
+             <div style="font-size: 220%; font-weight: bold; margin: 10px;"> {{ $book->name }} </div>
                 <div class="book-content" ng-show="!searching">
                     <p class="text-muted" ng-non-bindable>{{$book->description}}</p>
 
                     <div class="page-list" ng-non-bindable>
                         <hr>
+
                         @if(count($bookChildren) > 0)
                             @foreach($bookChildren as $childElement)
                                 @if($childElement->isA('chapter'))
@@ -104,11 +114,12 @@
                     </form>
                 </div>
                 <div class="activity anim fadeIn">
-                    <h3>Recent Activity</h3>
+                    <h4 style="font-size: 160%;">Recent Activity</h4>
                     @include('partials/activity-list', ['activity' => Activity::entityActivity($book, 20, 0)])
                 </div>
             </div>
         </div>
     </div>
 
+@include('books/show-css');
 @stop

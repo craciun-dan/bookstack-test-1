@@ -2,6 +2,13 @@
 
 @section('content')
 
+<?php
+/*
+print "wk is" . Config::get('app.pdfparser');
+print "storage path is " . public_path();
+*/
+?>
+
     <div class="faded-small toolbar">
         <div class="container">
             <div class="row">
@@ -15,6 +22,15 @@
                         @if(userCan('page-create', $chapter))
                             <a href="{{$chapter->getUrl() . '/create-page'}}" class="text-pos text-button"><i class="zmdi zmdi-plus"></i>New Page</a>
                         @endif
+
+                        <span dropdown class="dropdown-container">
+                            <div dropdown-toggle class="text-button text-primary"><i class="zmdi zmdi-open-in-new"></i>Export</div>
+                            <ul class="wide">
+                                <li><a href="{{$chapter->getUrl()}}/export/newfromchapterhtml" target="_blank">Chapter as HTML <span class="text-muted float right">.html</span></a></li>
+                                <li><a href="{{$chapter->getUrl()}}/export/newfromchapterpdf" target="_blank">Chapter as PDF <span class="text-muted float right">.pdf</span></a></li>
+                            </ul>
+                        </span>
+
                         @if(userCan('chapter-update', $chapter))
                             <a href="{{$chapter->getUrl() . '/edit'}}" class="text-primary text-button"><i class="zmdi zmdi-edit"></i>Edit</a>
                         @endif
@@ -40,20 +56,40 @@
         </div>
     </div>
 
-
     <div class="container" ng-non-bindable>
         <div class="row">
             <div class="col-md-8">
-                <h1>{{ $chapter->name }}</h1>
+<h1>
+<?php
+/*
+$i = 1;
+foreach ($chapter->book->chapters as $currentChapter) {
+    if ($chapter->name == $currentChapter->name) {
+        print $i . ". " . $chapter->name;
+        break;
+    }
+    $i++;
+}
+*/
+?>
+</h1>
+<!--                <h1>{{ $chapter->name }}</h1> -->
                 <p class="text-muted">{{ $chapter->description }}</p>
 
                 @if(count($pages) > 0)
                     <div class="page-list">
                         <hr>
-                        @foreach($pages as $page)
-                            @include('pages/list-item', ['page' => $page])
+<?php
+    $j = 1;
+    foreach($pages as $page) {
+?>
+        @include('pages/list-item', ['page' => $page])
+
+<?php
+        $j++;
+    }
+?>
                             <hr>
-                        @endforeach
                     </div>
                 @else
                     <hr>

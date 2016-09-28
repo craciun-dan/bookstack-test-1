@@ -2,10 +2,15 @@
 
 return [
 
-
     'env' => env('APP_ENV', 'production'),
 
     'editor' => env('APP_EDITOR', 'html'),
+
+    'pdfparser' => env('PDF_PARSER', 'script'),
+
+    'pdf_bin_path' => env('PDF_BIN_PATH', '/opt/wkhtmltox/bin/wkhtmltopdf'),
+
+    'display_indexes' => env('DISPLAY_INDEXES', 'true'),
 
     /*
     |--------------------------------------------------------------------------

@@ -90,10 +90,36 @@
                     <label for="setting-registration-restrict">Restrict registration to domain</label>
                     <p class="small">Enter a comma separated list of email domains you would like to restrict registration to. Users will be sent an email to confirm their address before being allowed to interact with the application.
                         <br> Note that users will be able to change their email addresses after successful registration.</p>
-                    <input type="text" id="setting-registration-restrict" name="setting-registration-restrict" placeholder="No restriction set" value="{{ setting('registration-restrict', '') }}">
+                    <input type="text" id="setting-registration-restrict" name="setting-registration-restrict"
+ placeholder="No restriction set" value="{{ setting('registration-restrict', '') }}">
                 </div>
             </div>
         </div>
+
+        <hr class="margin-top">
+
+        <h3>Export Books/Chapters</h3>
+
+        <div class="form-group">
+            <label for="setting-pdfparser">Export Method</label>
+            <p class="small">Select which method will be used to convert books or chapters to PDF:</p>
+            <select name="setting-pdfparser" id="setting-pdfparser">
+                <option @if(setting('pdfparser') === 'script') selected @endif value="script">External (PHP Script)</option>
+                <option @if(setting('pdfparser') === 'dompdf') selected @endif value="dompdf">Internal (Built-in dompdf)</option>
+            </select>
+        </div>
+        <p class="small">The <i>Internal (Built-in dompdf)</i> method uses the built-in PDF parser. The <i>External (PHP Script)</i> method allows you to use an (external) converter of your choice, and enter the desired commands in the <i>app/Services/PdfConvertBook.php</i>, <i>app/Services/PdfConvertChapter.php</i> and <i>app/Services/PdfConvertPage.php</i> files.</p>
+<!--	<p class="small"><i>The export functionality is accessible via the entries Page to PDF, Chapter to PDF and Book to PDF.</i></p> -->
+
+        <hr class="margin-top">
+
+        <h3>Display Chapter Indexes</h3>
+
+            <p class="small">This option will use counters for chapters and pages.</p>
+            <div class="form-group">
+                <label>Display indexes for chapters and pages?</label>
+                <div selected toggle-switch name="setting-display-indexes" value="{{ setting('display-indexes') }}"></div>
+            </div>
 
         <hr class="margin-top">
 

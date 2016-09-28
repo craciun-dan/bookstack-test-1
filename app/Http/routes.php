@@ -24,6 +24,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{slug}/delete', 'BookController@showDelete');
         Route::get('/{bookSlug}/sort', 'BookController@sort');
         Route::put('/{bookSlug}/sort', 'BookController@saveSort');
+        Route::get('/{bookSlug}/export/frombookhtml', 'PageController@exportFromBookToHtml');
+        Route::get('/{bookSlug}/export/frombookpdf', 'PageController@exportFromBookToPdf');
+        Route::get('/{bookSlug}/export/newfrombookhtml', 'BookController@controllerExportFromBookToHtml');
+        Route::get('/{bookSlug}/export/newfrombookpdf', 'BookController@controllerExportFromBookToPdf');
 
         // Pages
         Route::get('/{bookSlug}/page/create', 'PageController@create');
@@ -33,6 +37,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{bookSlug}/page/{pageSlug}/export/pdf', 'PageController@exportPdf');
         Route::get('/{bookSlug}/page/{pageSlug}/export/html', 'PageController@exportHtml');
         Route::get('/{bookSlug}/page/{pageSlug}/export/plaintext', 'PageController@exportPlainText');
+        Route::get('/{bookSlug}/page/{pageSlug}/export/bookhtml', 'PageController@exportBookHtml');
         Route::get('/{bookSlug}/page/{pageSlug}/edit', 'PageController@edit');
         Route::get('/{bookSlug}/page/{pageSlug}/move', 'PageController@showMove');
         Route::put('/{bookSlug}/page/{pageSlug}/move', 'PageController@move');
@@ -43,6 +48,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/{bookSlug}/page/{pageSlug}', 'PageController@update');
         Route::delete('/{bookSlug}/page/{pageSlug}', 'PageController@destroy');
         Route::delete('/{bookSlug}/draft/{pageId}', 'PageController@destroyDraft');
+        Route::get('/{bookSlug}/page/{pageSlug}/export/newfrompagehtml', 'PageController@controllerExportFromPageToHtml');
+        Route::get('/{bookSlug}/page/{pageSlug}/export/newfrompagepdf', 'PageController@controllerExportFromPageToPdf');
 
         // Revisions
         Route::get('/{bookSlug}/page/{pageSlug}/revisions', 'PageController@showRevisions');
@@ -62,6 +69,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/{bookSlug}/chapter/{chapterSlug}/permissions', 'ChapterController@restrict');
         Route::get('/{bookSlug}/chapter/{chapterSlug}/delete', 'ChapterController@showDelete');
         Route::delete('/{bookSlug}/chapter/{chapterSlug}', 'ChapterController@destroy');
+        Route::get('/{bookSlug}/chapter/{chapterSlug}/export/fromchapterhtml', 'PageController@exportFromChapterToHtml');
+        Route::get('/{bookSlug}/chapter/{chapterSlug}/export/fromchapterpdf', 'PageController@exportFromChapterToPdf');
+        Route::get('/{bookSlug}/chapter/{chapterSlug}/export/newfromchapterhtml', 'ChapterController@controllerExportFromChapterToHtml');
+        Route::get('/{bookSlug}/chapter/{chapterSlug}/export/newfromchapterpdf', 'ChapterController@controllerExportFromChapterToPdf');
 
     });
 

@@ -206,18 +206,23 @@ class PageRepo extends EntityRepo
             if (get_class($childNode) !== 'DOMElement') continue;
 
             // Overwrite id if not a BookStack custom id
+
+            /*
             if ($childNode->hasAttribute('id')) {
                 $id = $childNode->getAttribute('id');
+                $randomNumber = rand(1000, 9999);
                 if (strpos($id, 'bkmrk') === 0 && array_search($id, $idArray) === false) {
-                    $idArray[] = $id;
+                    $idArray[] = 'mod-' . $randomNumber . '-' . $id;
                     continue;
                 };
             }
+            */
 
             // Create an unique id for the element
             // Uses the content as a basis to ensure output is the same every time
             // the same content is passed through.
-            $contentId = 'bkmrk-' . substr(strtolower(preg_replace('/\s+/', '-', trim($childNode->nodeValue))), 0, 20);
+            $randomNumber = rand(1000, 9999);
+            $contentId = 'mod-' . $randomNumber . '-' . substr(strtolower(preg_replace('/\s+/', '-', trim($childNode->nodeValue))), 0, 20);
             $newId = urlencode($contentId);
             $loopIndex = 0;
             while (in_array($newId, $idArray)) {
@@ -225,8 +230,9 @@ class PageRepo extends EntityRepo
                 $loopIndex++;
             }
 
-            $childNode->setAttribute('id', $newId);
-            $idArray[] = $newId;
+            $randomNumber = rand(1000, 9999);
+            $childNode->setAttribute('id', 'mod-' . $randomNumber . '-' . $newId);
+            $idArray[] = 'mod-' . $randomNumber . '-' . $newId;
         }
 
         // Generate inner html as a string

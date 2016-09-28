@@ -1,8 +1,43 @@
 <div class="page {{$page->draft ? 'draft' : ''}} entity-list-item" data-entity-type="page" data-entity-id="{{$page->id}}">
-    <h3>
-        <a href="{{ $page->getUrl() }}" class="text-page"><i class="zmdi zmdi-file-text"></i>{{ $page->name }}</a>
-    </h3>
 
+<?php
+$indexChapter = 1;
+$indexPage = 1;
+$listPages = 0;
+
+if (setting('display-indexes')) {
+
+if (isset($book) && count($book->chapters) > 0) {
+    foreach($book->chapters as $currentChapter) {
+        if ($page->chapter) {
+            if ($currentChapter->id == $page->chapter->id) {
+                foreach($currentChapter->pages as $currentPage) {
+                    if ($currentPage->id == $page->id) {
+                        print '<a href="' . $page->getUrl() . '" class="text-page">' . '<i class="zmdi zmdi-file-text"></i>' . 
+                        $indexChapter . "." . $indexPage . ". " . $page->name . "</a>";
+                        $listPages = 1; // don't print it twice
+                        break;
+                    }
+                    $indexPage++;
+                }
+            }
+        }
+        $indexChapter++;
+    }
+}
+
+}
+
+if ($listPages == 0) {
+    print '<a href="' . $page->getUrl() . '" class="text-page">' . '<i class="zmdi zmdi-file-text"></i>' . $page->name . '</a>';
+}
+?>
+
+<!--
+    @if ($listPages == 0)
+        <a href="{{ $page->getUrl() }}" class="text-page"><i class="zmdi zmdi-file-text"></i>{{ $page->name }}</a>
+    @endif
+-->
     @if(isset($page->searchSnippet))
         <p class="text-muted">{!! $page->searchSnippet !!}</p>
     @else

@@ -62,7 +62,7 @@
             </div>
 
             <div class="col-sm-4" id="recent-activity">
-                <h3>Recent Activity</h3>
+                <h4 style="font-size: 160%;">Recent Activity</h4>
                 @include('partials/activity-list', ['activity' => $activity])
             </div>
 

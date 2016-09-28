@@ -5,6 +5,11 @@ use BookStack\EmailConfirmation;
 class AuthTest extends TestCase
 {
 
+    public function test_wkhtml_bin_path () {
+        $settings = app('BookStack\Services\SettingService');
+        $settings->put('wkhtml_bin_path', '/opt/wkhtmltox/bin/wkhtmltopdf');
+    }
+
     public function test_auth_working()
     {
         $this->visit('/')
